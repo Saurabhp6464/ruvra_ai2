@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Post New Job - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-briefcase-fill"></i> Post New Job</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <h5 class="mb-3"><i class="bi bi-info-circle"></i> Basic Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Job Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="title" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Job Type <span class="text-danger">*</span></label>
+                                <select class="form-select" name="job_type" required>
+                                    <option value="full-time">Full Time</option>
+                                    <option value="part-time">Part Time</option>
+                                    <option value="internship">Internship</option>
+                                    <option value="contract">Contract</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Work Mode <span class="text-danger">*</span></label>
+                                <select class="form-select" name="work_mode" required>
+                                    <option value="onsite">Onsite</option>
+                                    <option value="remote">Remote</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Location <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="location" placeholder="e.g., Mumbai, Maharashtra" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Job Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="description" rows="4" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Key Responsibilities</label>
+                            <textarea class="form-control" name="responsibilities" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Benefits & Perks</label>
+                            <textarea class="form-control" name="benefits" rows="2" placeholder="e.g., Health Insurance, Flexible Hours, Learning Opportunities"></textarea>
+                        </div>
+
+                        <hr>
+
+                        <!-- Requirements -->
+                        <h5 class="mb-3"><i class="bi bi-clipboard-check"></i> Requirements</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Required Skills <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="required_skills" placeholder="Comma-separated: Python, Django, React, SQL" required>
+                            <small class="text-muted">Enter skills separated by commas</small>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Minimum CGPA <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="min_cgpa" step="0.01" min="0" max="10" value="6.0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Min Experience (months)</label>
+                                <input type="number" class="form-control" name="min_experience" value="0" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Max Experience (months)</label>
+                                <input type="number" class="form-control" name="max_experience" min="0">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Eligible Departments <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="eligible_departments" placeholder="CSE, IT, ECE or ALL" required>
+                                <small class="text-muted">Department codes separated by commas, or ALL</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Eligible Batches <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="eligible_batches" placeholder="2024, 2025, 2026" required>
+                                <small class="text-muted">Batch years separated by commas</small>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Compensation -->
+                        <h5 class="mb-3"><i class="bi bi-cash-stack"></i> Compensation</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label">Minimum Salary <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="min_salary" step="0.01" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Maximum Salary <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="max_salary" step="0.01" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Currency</label>
+                                <select class="form-select" name="currency">
+                                    <option value="INR" selected>INR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Other Details -->
+                        <h5 class="mb-3"><i class="bi bi-gear"></i> Other Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Number of Vacancies <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="vacancies" value="1" min="1" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Application Deadline <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="application_deadline" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-select" name="status">
+                                    <option value="draft">Draft</option>
+                                    <option value="published" selected>Published</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="on-hold">On Hold</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Post Job
+                            </button>
+                            <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

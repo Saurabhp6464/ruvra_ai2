@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Recruiter Profile - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-building"></i> {% if recruiter %}Edit{% else %}Create{% endif %} Company Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Company Information -->
+                        <h5 class="mb-3"><i class="bi bi-info-circle"></i> Company Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Company Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="company_name" value="{{ recruiter.company_name|default:'' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Industry</label>
+                                <input type="text" class="form-control" name="industry" value="{{ recruiter.industry|default:'' }}" placeholder="e.g., IT, Finance">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Company Description</label>
+                            <textarea class="form-control" name="company_description" rows="4">{{ recruiter.company_description|default:'' }}</textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Company Size</label>
+                                <select class="form-select" name="company_size">
+                                    <option value="">Select Size</option>
+                                    <option value="1-10" {% if recruiter.company_size == '1-10' %}selected{% endif %}>1-10 employees</option>
+                                    <option value="11-50" {% if recruiter.company_size == '11-50' %}selected{% endif %}>11-50 employees</option>
+                                    <option value="51-200" {% if recruiter.company_size == '51-200' %}selected{% endif %}>51-200 employees</option>
+                                    <option value="201-500" {% if recruiter.company_size == '201-500' %}selected{% endif %}>201-500 employees</option>
+                                    <option value="501-1000" {% if recruiter.company_size == '501-1000' %}selected{% endif %}>501-1000 employees</option>
+                                    <option value="1000+" {% if recruiter.company_size == '1000+' %}selected{% endif %}>1000+ employees</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Website</label>
+                                <input type="url" class="form-control" name="website" value="{{ recruiter.website|default:'' }}" placeholder="https://company.com">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Company Logo</label>
+                            {% if recruiter.company_logo %}
+                                <div class="mb-2">
+                                    <img src="{{ recruiter.company_logo.url }}" alt="Logo" style="max-width: 150px;">
+                                </div>
+                            {% endif %}
+                            <input type="file" class="form-control" name="company_logo" accept="image/*">
+                        </div>
+
+                        <hr>
+
+                        <!-- Contact Person -->
+                        <h5 class="mb-3"><i class="bi bi-person"></i> Contact Person Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Contact Person Name</label>
+                                <input type="text" class="form-control" name="contact_person" value="{{ recruiter.contact_person|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Designation</label>
+                                <input type="text" class="form-control" name="designation" value="{{ recruiter.designation|default:'' }}" placeholder="e.g., HR Manager">
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Address -->
+                        <h5 class="mb-3"><i class="bi bi-geo-alt"></i> Company Address</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" name="address" rows="2">{{ recruiter.address|default:'' }}</textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" name="city" value="{{ recruiter.city|default:'' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-control" name="state" value="{{ recruiter.state|default:'' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pincode</label>
+                                <input type="text" class="form-control" name="pincode" value="{{ recruiter.pincode|default:'' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Country</label>
+                            <input type="text" class="form-control" name="country" value="{{ recruiter.country|default:'India' }}">
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Save Profile
+                            </button>
+                            <a href="{% url 'recruiters:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Applications - {{ job.title }} - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="mb-4">
+        <a href="{% url 'recruiters:dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-briefcase"></i> {{ job.title }}
+            </h4>
+            <small>{{ job.recruiter.company_name }}</small>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col">
+                    <h4>{{ stats.total_applications }}</h4>
+                    <small class="text-muted">Total Applications</small>
+                </div>
+                <div class="col">
+                    <h4 class="text-success">{{ stats.high_match }}</h4>
+                    <small class="text-muted">High Match (70%+)</small>
+                </div>
+                <div class="col">
+                    <h4 class="text-warning">{{ stats.medium_match }}</h4>
+                    <small class="text-muted">Medium Match (50-70%)</small>
+                </div>
+                <div class="col">
+                    <h4 class="text-info">{{ stats.avg_match_score }}%</h4>
+                    <small class="text-muted">Avg Match Score</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if applications %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list"></i> Applications ({{ applications.count }})</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Department</th>
+                                <th>CGPA</th>
+                                <th>Match Score</th>
+                                <th>Status</th>
+                                <th>Applied Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ app.student.user.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ app.student.roll_number }}</small>
+                                    </td>
+                                    <td>{{ app.student.department.code }}</td>
+                                    <td><span class="badge bg-info">{{ app.student.cgpa }}</span></td>
+                                    <td>
+                                        {% if app.ai_match_score %}
+                                            {% if app.ai_match_score >= 70 %}
+                                                <span class="badge bg-success">{{ app.ai_match_score }}%</span>
+                                            {% elif app.ai_match_score >= 50 %}
+                                                <span class="badge bg-warning">{{ app.ai_match_score }}%</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ app.ai_match_score }}%</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{% url 'recruiters:update_application_status' app.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                                <option value="applied" {% if app.status == 'applied' %}selected{% endif %}>Applied</option>
+                                                <option value="shortlisted" {% if app.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                                                <option value="interview" {% if app.status == 'interview' %}selected{% endif %}>Interview</option>
+                                                <option value="offered" {% if app.status == 'offered' %}selected{% endif %}>Offered</option>
+                                                <option value="hired" {% if app.status == 'hired' %}selected{% endif %}>Hired</option>
+                                                <option value="rejected" {% if app.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td><small>{{ app.applied_at|date:"M d, Y" }}</small></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'jobs:application_detail' app.pk %}" class="btn btn-outline-primary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            {% if app.student.resume %}
+                                                <a href="{{ app.student.resume.url }}" target="_blank" class="btn btn-outline-success" title="View Resume">
+                                                    <i class="bi bi-file-pdf"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No applications received yet for this job.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

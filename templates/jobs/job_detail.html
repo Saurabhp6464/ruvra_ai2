@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 class="mb-2">{{ job.title }}</h2>
+                            <h5 class="text-muted">
+                                <i class="bi bi-building"></i> {{ job.recruiter.company_name }}
+                            </h5>
+                        </div>
+                        {% if job.status == 'published' %}
+                            <span class="badge bg-success fs-6">{{ job.get_status_display }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">{{ job.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <span class="badge bg-primary me-2">{{ job.get_job_type_display }}</span>
+                        <span class="badge bg-info text-dark me-2">
+                            <i class="bi bi-geo-alt"></i> {{ job.location }}
+                        </span>
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-laptop"></i> {{ job.get_work_mode_display }}
+                        </span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Job Description</h5>
+                    <p>{{ job.description }}</p>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Responsibilities</h5>
+                    <p>{{ job.responsibilities|default:"Not specified" }}</p>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Required Skills</h5>
+                    <p>{{ job.required_skills }}</p>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Benefits</h5>
+                    <p>{{ job.benefits|default:"Not specified" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Job Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong><i class="bi bi-cash"></i> Salary</strong>
+                        <p class="mb-0">₹{{ job.min_salary|floatformat:0 }} - ₹{{ job.max_salary|floatformat:0 }} {{ job.currency }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="bi bi-calendar"></i> Application Deadline</strong>
+                        <p class="mb-0">{{ job.application_deadline|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="bi bi-people"></i> Vacancies</strong>
+                        <p class="mb-0">{{ job.vacancies }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="bi bi-graph-up"></i> Min CGPA</strong>
+                        <p class="mb-0">{{ job.min_cgpa }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="bi bi-clock"></i> Experience</strong>
+                        <p class="mb-0">{{ job.min_experience }} months{% if job.max_experience %} - {{ job.max_experience }} months{% endif %}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="bi bi-book"></i> Eligible Departments</strong>
+                        <p class="mb-0">{{ job.eligible_departments }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="bi bi-calendar-check"></i> Eligible Batches</strong>
+                        <p class="mb-0">{{ job.eligible_batches }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            {% if match_score %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-robot"></i> AI Match Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Match Score</strong>
+                        <div class="progress mt-2" style="height: 30px;">
+                            {% if match_score >= 70 %}
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     data-width="{{ match_score }}" style="width: 0%">
+                                    <strong class="fs-6">{{ match_score }}%</strong>
+                                </div>
+                            {% elif match_score >= 50 %}
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     data-width="{{ match_score }}" style="width: 0%">
+                                    <strong class="fs-6">{{ match_score }}%</strong>
+                                </div>
+                            {% else %}
+                                <div class="progress-bar bg-danger" role="progressbar" 
+                                     data-width="{{ match_score }}" style="width: 0%">
+                                    <strong class="fs-6">{{ match_score }}%</strong>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if missing_skills %}
+                    <div class="alert alert-warning mb-0">
+                        <strong><i class="bi bi-exclamation-triangle"></i> Missing Skills:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for skill in missing_skills %}
+                                <li>{{ skill }}</li>
+                            {% endfor %}
+                        </ul>
+                        <small class="text-muted">Add these skills to improve your match score</small>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success mb-0">
+                        <i class="bi bi-check-circle"></i> You have all required skills!
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if user.is_authenticated and user.user_type == 'recruiter' %}
+                {% if job.recruiter.user == user %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning">
+                            <h6 class="mb-0"><i class="bi bi-gear"></i> Job Management</h6>
+                        </div>
+                        <div class="card-body">
+                            <a href="{% url 'jobs:edit_job' job.pk %}" class="btn btn-warning w-100 mb-2">
+                                <i class="bi bi-pencil"></i> Edit Job
+                            </a>
+                            <a href="{% url 'recruiters:job_applications' job.pk %}" class="btn btn-primary w-100">
+                                <i class="bi bi-list"></i> View Applications ({{ job.applications.count }})
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+            
+            {% if user.is_authenticated and user.user_type == 'student' %}
+                <div class="card">
+                    <div class="card-body">
+                        {% if has_applied %}
+                            <button class="btn btn-secondary w-100" disabled>
+                                <i class="bi bi-check-circle"></i> Already Applied
+                            </button>
+                            <a href="{% url 'jobs:my_applications' %}" class="btn btn-outline-primary w-100 mt-2">
+                                <i class="bi bi-list-ul"></i> View My Applications
+                            </a>
+                        {% else %}
+                            <a href="{% url 'jobs:apply_job' job.pk %}" class="btn btn-primary w-100">
+                                <i class="bi bi-send"></i> Apply Now
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

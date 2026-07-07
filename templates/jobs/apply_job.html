@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for {{ job.title }} - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-send"></i> Apply for {{ job.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Company:</strong> {{ job.recruiter.company_name }}<br>
+                        <strong>Location:</strong> {{ job.location }}<br>
+                        <strong>Salary:</strong> ₹{{ job.min_salary|floatformat:0 }} - ₹{{ job.max_salary|floatformat:0 }}
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="cover_letter" class="form-label">Cover Letter</label>
+                            <textarea class="form-control" id="cover_letter" name="cover_letter" rows="6" 
+                                      placeholder="Tell us why you're a great fit for this position..."></textarea>
+                            <small class="form-text text-muted">Optional but recommended</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Upload Resume (Optional)</label>
+                            <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx">
+                            <small class="form-text text-muted">Your profile resume will be used if not uploaded</small>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> Submit Application
+                            </button>
+                            <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

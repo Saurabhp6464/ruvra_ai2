@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}College Dashboard - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4"><i class="bi bi-building"></i> College Dashboard</h2>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="stat-card text-center">
+                <i class="bi bi-people-fill"></i>
+                <h4 class="mt-2">{{ stats.total_students }}</h4>
+                <p>Total Students</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="stat-card text-center" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <i class="bi bi-check-circle-fill"></i>
+                <h4 class="mt-2">{{ stats.placed_students }}</h4>
+                <p>Placed Students</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="stat-card text-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <i class="bi bi-percent"></i>
+                <h4 class="mt-2">{{ stats.placement_percentage }}%</h4>
+                <p>Placement Rate</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="stat-card text-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <i class="bi bi-cash-stack"></i>
+                <h4 class="mt-2">₹{{ stats.avg_package|floatformat:2 }}L</h4>
+                <p>Avg Package</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-fill"></i> Placement Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <h5 class="text-success">₹{{ stats.highest_package|floatformat:2 }}L</h5>
+                            <small class="text-muted">Highest Package</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="text-primary">₹{{ stats.avg_package|floatformat:2 }}L</h5>
+                            <small class="text-muted">Average Package</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="text-info">₹{{ stats.lowest_package|floatformat:2 }}L</h5>
+                            <small class="text-muted">Lowest Package</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <h5 class="text-warning">{{ stats.total_applications }}</h5>
+                        <small class="text-muted">Total Applications</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-building-fill"></i> Top Recruiters</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.top_recruiters %}
+                        <div class="list-group">
+                            {% for recruiter in stats.top_recruiters %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ recruiter.company }}
+                                    <span class="badge bg-primary rounded-pill">{{ recruiter.hired }} hired</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No placement data available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-diagram-3-fill"></i> Department-wise Placement</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.department_wise %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Total Students</th>
+                                        <th>Placed</th>
+                                        <th>Placement %</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dept in stats.department_wise %}
+                                        <tr>
+                                            <td><strong>{{ dept.department }}</strong></td>
+                                            <td>{{ dept.total }}</td>
+                                            <td>{{ dept.placed }}</td>
+                                            <td><span class="badge bg-success">{{ dept.percentage }}%</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" 
+                                                         data-width="{{ dept.percentage }}" 
+                                                         style="width: 0%" 
+                                                         aria-valuenow="{{ dept.percentage }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                        {{ dept.percentage }}%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No department data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Recent Placement Drives</h5>
+                </div>
+                <div class="card-body">
+                    {% if drives %}
+                        <div class="list-group">
+                            {% for drive in drives %}
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">{{ drive.drive_name }}</h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> {{ drive.drive_date|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No placement drives scheduled.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-building"></i> Departments</h5>
+                </div>
+                <div class="card-body">
+                    {% if departments %}
+                        <div class="list-group">
+                            {% for dept in departments %}
+                                <div class="list-group-item">
+                                    <strong>{{ dept.name }}</strong> ({{ dept.code }})
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No departments added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-gear-fill"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'admin:index' %}" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add Students
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'admin:index' %}" class="btn btn-primary w-100">
+                                <i class="bi bi-building"></i> Manage Departments
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'admin:index' %}" class="btn btn-primary w-100">
+                                <i class="bi bi-calendar-event"></i> Schedule Drive
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'students:student_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-list"></i> View All Students
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

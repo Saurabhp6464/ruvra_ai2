@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Detail - RUVRA AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Application Details</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{{ application.job.title }}</h5>
+                    <p class="text-muted">{{ application.job.recruiter.company_name }}</p>
+                    
+                    <hr>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Status:</div>
+                        <div class="col-md-8">
+                            {% if application.status == 'applied' %}
+                                <span class="badge bg-info">{{ application.get_status_display }}</span>
+                            {% elif application.status == 'shortlisted' %}
+                                <span class="badge bg-success">{{ application.get_status_display }}</span>
+                            {% elif application.status == 'selected' %}
+                                <span class="badge bg-primary">{{ application.get_status_display }}</span>
+                            {% elif application.status == 'rejected' %}
+                                <span class="badge bg-danger">{{ application.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ application.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Applied On:</div>
+                        <div class="col-md-8">{{ application.applied_at|date:"F d, Y H:i" }}</div>
+                    </div>
+                    
+                    {% if application.ai_match_score %}
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">AI Match Score:</div>
+                            <div class="col-md-8">
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         data-width="{{ application.ai_match_score }}" 
+                                         style="width: 0%" 
+                                         aria-valuenow="{{ application.ai_match_score }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        {{ application.ai_match_score }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
+                                    bar.style.width = bar.getAttribute('data-width') + '%';
+                                });
+                            });
+                        </script>
+                    {% endif %}
+                    
+                    {% if application.interview_date %}
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Interview Date:</div>
+                            <div class="col-md-8">{{ application.interview_date|date:"F d, Y H:i" }}</div>
+                        </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <h6 class="fw-bold">Cover Letter:</h6>
+                    <p>{{ application.cover_letter|default:"No cover letter provided" }}</p>
+                    
+                    {% if application.recruiter_feedback %}
+                        <hr>
+                        <h6 class="fw-bold">Recruiter Feedback:</h6>
+                        <p>{{ application.recruiter_feedback }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Job Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Location:</strong> {{ application.job.location }}</p>
+                    <p><strong>Salary:</strong> ₹{{ application.job.min_salary|floatformat:0 }} - ₹{{ application.job.max_salary|floatformat:0 }}</p>
+                    <p><strong>Job Type:</strong> {{ application.job.get_job_type_display }}</p>
+                    <p><strong>Work Mode:</strong> {{ application.job.get_work_mode_display }}</p>
+                    <hr>
+                    <a href="{% url 'jobs:job_detail' application.job.pk %}" class="btn btn-primary w-100">
+                        View Job Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
